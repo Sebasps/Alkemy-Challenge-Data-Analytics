@@ -56,16 +56,11 @@ main_table = concat_table.loc[:,["cod_localidad", "id_provincia", "id_departamen
 	"num_telefono", "mail", "web"]]
 
 logging.info("Generando tabla 2.")
-records_table_1 = concat_table.groupby(['categoria']).size().to_frame(
-	name = "registros_categoria")
-records_table_2 = concat_table.groupby(['categoria', 'fuente']).size().to_frame(
-	name = "registros_fuente")
-records_table_3 = concat_table.groupby(['categoria', 'provincia']).size().to_frame(
-	name = "registros_provincia_categoria")
-records_table = records_table_1.merge(
-	records_table_2, how='outer', left_index=True, right_index=True)
-records_table = records_table.merge(
-	records_table_3, how='outer', left_index=True, right_index=True)
+records_table_1 = concat_table.groupby(['categoria']).size().to_frame(name = "registros_categoria")
+records_table_2 = concat_table.groupby(['categoria', 'fuente']).size().to_frame(name = "registros_fuente")
+records_table_3 = concat_table.groupby(['categoria', 'provincia']).size().to_frame(name = "registros_provincia_categoria")
+records_table = records_table_1.merge(records_table_2, how='outer', left_index=True, right_index=True)
+records_table = records_table.merge(records_table_3, how='outer', left_index=True, right_index=True)
 records_table.reset_index(inplace=True)
 records_table.set_index("categoria", inplace=True)
 records_table = records_table.loc[:,["registros_categoria", "fuente", "registros_fuente", 
@@ -76,7 +71,7 @@ cinema_inventory_table = df_cinemas.loc[:,["provincia", "pantallas", "butacas", 
 cinema_inventory_table['espacio_incaa'] = cinema_inventory_table["espacio_incaa"].replace(["SI","si"], 1).fillna(0).astype("int")
 cinema_inventory_table = cinema_inventory_table.groupby("provincia").sum()
 
-
+# Actualización de la base de datos
 engine = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}")
 
 main_table=main_table.assign(fecha_carga=date_2)
@@ -93,9 +88,6 @@ except:
 	database_creation()
 else:
 	logging.info("Actualizando base de datos.")
-	main_table.to_sql(
-		name="tabla_principal",	con=engine,	if_exists="append",	index=False)
-	records_table.to_sql(
-		name="tabla_registros",	con=engine,	if_exists="append",	index=True)
-	cinema_inventory_table.to_sql(
-		name="tabla_inventario_cines",	con=engine,	if_exists="append",	index=True)
+	main_table.to_sql(name="tabla_principal", con=engine, if_exists="append", index=False)
+	records_table.to_sql(name="tabla_registros", con=engine, if_exists="append", index=True)
+	cinema_inventory_table.to_sql(name="tabla_inventario_cines", con=engine, if_exists="append", index=True)
