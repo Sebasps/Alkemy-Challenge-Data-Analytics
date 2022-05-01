@@ -1,5 +1,5 @@
 # Alkemy challenge Data Analytics - Python
-Se obtubieron y procesaron 3 datasets con el fin de almacenar y visualizar la información en una base de datos de PostgreSQL.
+Se obtuvieron y procesaron 3 datasets con el fin de almacenar y visualizar la información en una base de datos de PostgreSQL.
 
 ## Como instalar el proyecto
 **Clonar repositorio**
